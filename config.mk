@@ -1,0 +1,7 @@
+CFLAGS=
+ARCH=6
+NAME=swifd
+
+CC=$(ARCH)g
+LD=$(ARCH)l
+

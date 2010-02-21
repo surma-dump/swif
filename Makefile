@@ -1,12 +1,11 @@
-CFLAGS=
-CC=8g
-LD=8l
-NAME=swif
+include config.mk
 
 all:
-	$(CC) *.go $(CFLAGS)
-	$(LD) -o $(NAME) *.8 
+	cd swif ; $(MAKE) $(MFLAGS)
+	$(CC) $(CFLAGS) -I ./swif/ *.go
+	$(LD) -o $(NAME) -L swif *.$(ARCH) 
 run:
 	./$(NAME)
 clean:
-	@-rm *.8 $(NAME)
+	cd swif; $(MAKE) $(MFLAGS) clean
+	@-rm *.$(ARCH) $(NAME) 
