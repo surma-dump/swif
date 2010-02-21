@@ -1,0 +1,10 @@
+<config>
+	<network>
+		<address>127.0.0.1</address>
+		<port>8080</port>
+	</network>
+	<menuentry>
+		<label>Shutdown</label>
+		<action>kill</action>
+	</menuentry>
+</config>
