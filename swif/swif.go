@@ -94,10 +94,8 @@ func (s *Swif) ServeHTTP(c *http.Conn, req *http.Request) {
 }
 
 func (s *Swif) printMenu(c *http.Conn) {
-	fmt.Fprintf(c, "%d\n", len(s.handler))
-	for i:=0; i < len(s.handler); i++ {
-//		fmt.Fprintf(c, "&lt;%s&gt;%s\n",
-//			s.handler[i], "bla")
+	for key,_ := range s.handler {
+		fmt.Fprintf(c, "&lt;%s&gt;\n", key)
 	}
 }
 
