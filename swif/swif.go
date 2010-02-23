@@ -10,22 +10,42 @@ import (
 
 
 type networkconf struct {
-	Address string;
-	Port string;
+	Address string
+	Port string
 }
 
 type menuconf struct {
-	Label string;
-	Action string;
+	Label string
+	Action string
 }
 
 type config struct {
-	Network networkconf;
-	Menuentry []menuconf;
+	Network networkconf
+	Menuentry []menuconf
 }
 
 type Swif struct {
-	conf config;
+	conf config
+	handler map[string] SwifHandler	
+}
+
+func (s *Swif) RegisterHandler(name string, r SwifHandler) {
+	s.handler[name] = r 
+}
+
+type SwifHandler interface {
+	HandleAction (c *http.Conn)
+}
+
+type HandlerFunc func(c *http.Conn)
+
+func (f HandlerFunc) HandleAction(c *http.Conn) {
+	f(c)
+}
+
+func KillHandler(c *http.Conn) {
+	fmt.Fprintf(c, "Killing now...\n") 
+	os.Exit(0)
 }
 
 func (s *Swif) handleError(code int, c *http.Conn) {
@@ -39,13 +59,20 @@ func (s *Swif) handleError(code int, c *http.Conn) {
 	}
 }
 
-func (s *Swif) handleAction(action string, c *http.Conn) {
-	switch(action) {
-		case "kill":
-			io.WriteString(c, "Killing...")
-			os.Exit(0)
-		default:
+
+func NewSwif() *Swif {
+	s := new(Swif)
+	s.handler = make(map[string] SwifHandler)
+	s.RegisterHandler("kill", HandlerFunc(KillHandler))
+	return s
+}
+
+func (s *Swif) handleAction(actionname string, c *http.Conn) {
+	h, ok := s.handler[actionname]
+	if !ok {
 			io.WriteString(c, "Unknown action")
+	} else {
+		h.HandleAction(c)
 	}
 }
 
@@ -67,9 +94,10 @@ func (s *Swif) ServeHTTP(c *http.Conn, req *http.Request) {
 }
 
 func (s *Swif) printMenu(c *http.Conn) {
-	for i:=0; i < len(s.conf.Menuentry); i++ {
-		fmt.Fprintf(c, "&lt;%s&gt;%s\n",
-			s.conf.Menuentry[i].Action, s.conf.Menuentry[i].Label)
+	fmt.Fprintf(c, "%d\n", len(s.handler))
+	for i:=0; i < len(s.handler); i++ {
+//		fmt.Fprintf(c, "&lt;%s&gt;%s\n",
+//			s.handler[i], "bla")
 	}
 }
 

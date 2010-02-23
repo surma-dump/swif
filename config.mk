@@ -1,5 +1,5 @@
 CFLAGS=
-ARCH=6
+ARCH=8
 NAME=swifd
 
 CC=$(ARCH)g

@@ -12,7 +12,7 @@ func main() {
 		panic("Could not open config file\n", err.String())
 	}
 
-	var s swif.Swif
+	s := swif.NewSwif()
 	err = s.ReadConfig(f)
 	if err != nil {
 		panic("Reading configuration failed\n", err.String())
